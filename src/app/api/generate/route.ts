@@ -17,18 +17,17 @@ export async function POST(req: Request) {
 
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
     const buffer = Buffer.from(base64Data, "base64");
-
     const file = await toFile(buffer, "photo.png", { type: "image/png" });
 
-    // Memanggil endpoint edit dengan model generasi terbaru
+    // AI diinstruksikan menambahkan ornamen via prompt, 
+    // tetapi fitur wajah tetap dikunci agar tidak terdistorsi (tetap mirip aslinya)
     const response = await openai.images.edit({
       model: "gpt-image-1.5", 
       image: file,
-      prompt: `Ubah latar belakang menjadi gaya ${style}, kualitas ultra HD, tata letak elegan dan minimalis modern.`,
+      prompt: `Terapkan gaya ${style} dengan resolusi Ultra HD yang elegan. Ubah latar belakang dan tambahkan ornamen, aksesori, atau efek riasan yang relevan dengan tema.`,
       n: 1,
       size: "1024x1024",
-      // Parameter krusial untuk mengunci fitur wajah agar tetap identik dengan aslinya
-      input_fidelity: "high", 
+      input_fidelity: "high", // Diganti kembali ke high agar wajah tidak rusak/berubah bentuk
     });
 
     if (!response.data || response.data.length === 0) {
@@ -36,24 +35,14 @@ export async function POST(req: Request) {
     }
 
     const imageResult = response.data[0];
-    let finalImageUrl = "";
-
-    // Fleksibilitas membaca balasan dari OpenAI (bisa berupa Base64 atau URL)
-    if (imageResult.b64_json) {
-      finalImageUrl = `data:image/png;base64,${imageResult.b64_json}`;
-    } else if (imageResult.url) {
-      finalImageUrl = imageResult.url;
-    } else {
-      throw new Error("Format balasan OpenAI tidak dikenali.");
-    }
+    const finalImageUrl = imageResult.b64_json 
+      ? `data:image/png;base64,${imageResult.b64_json}` 
+      : imageResult.url;
 
     return NextResponse.json({ url: finalImageUrl });
 
   } catch (error: any) {
     console.error("OpenAI Error Detail:", error.message || error);
-    return NextResponse.json(
-      { error: error.message || "Gagal memproses gambar" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || "Gagal memproses gambar" }, { status: 500 });
   }
 }
