@@ -306,17 +306,19 @@ export default function ResultPage() {
       );
     }
     
-    // Default Fallback
+    // Default Fallback (Classic Polaroid Single)
     return (
-      <div className="flex flex-col p-8 bg-[#f4f1ea] w-full h-full relative items-center justify-center">
-        <div className="w-full bg-white p-4 pb-16 shadow-2xl border border-gray-100 flex flex-col relative rotate-[1deg]">
-          <div className="w-full aspect-[3/4] overflow-hidden bg-gray-900 border border-gray-200">
-             {/* eslint-disable-next-line @next/next/no-img-element */}
-             <img src={photos[0]} alt="AI" className="w-full h-full object-cover" crossOrigin="anonymous" />
-          </div>
-          <div className="absolute bottom-6 w-full text-center left-0">
-             <span className="font-serif text-gray-800 text-xl italic tracking-wider">Aesthetic Canvas</span>
-          </div>
+      // Menghapus efek miring (rotate) dan background luar. 
+      // Menggunakan padding langsung sebagai bingkai putih polaroid agar pas 100% di kertas cetak 4R.
+      <div className="flex flex-col bg-white w-full h-full p-5 pb-24 relative">
+        <div className="w-full h-full overflow-hidden bg-gray-900 border border-gray-200 shadow-inner">
+           {/* eslint-disable-next-line @next/next/no-img-element */}
+           <img src={photos[0]} alt="AI" className="w-full h-full object-cover" crossOrigin="anonymous" />
+        </div>
+        <div className="absolute bottom-8 w-full text-center left-0 px-4">
+           <span className="font-serif text-gray-800 text-2xl italic tracking-wider font-bold">
+             Aesthetic Canvas
+           </span>
         </div>
       </div>
     );
