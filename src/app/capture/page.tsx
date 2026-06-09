@@ -13,6 +13,8 @@ function CaptureContent() {
   const style = searchParams.get("style");
   const templateId = searchParams.get("template");
   const slots = parseInt(searchParams.get("slots") || "1", 10);
+  const mode = searchParams.get("mode"); // "bg" untuk fitur Ganti Background
+  const backgroundId = searchParams.get("background");
 
   const webcamRef = useRef<Webcam>(null);
   
@@ -69,16 +71,26 @@ function CaptureContent() {
     } else if (photos.length === slots) {
       // Sesi selesai, simpan ke sessionStorage agar bisa dibaca halaman Result
       sessionStorage.setItem("capturedPhotos", JSON.stringify(photos));
-      sessionStorage.setItem("selectedStyle", style || "minimalist-elegant");
-      sessionStorage.setItem("selectedTemplate", templateId || "single-1");
-      
+
       setCountdown(null);
       setIsSessionActive(false);
-      
-      // Berpindah ke halaman Result
-      setTimeout(() => {
-        router.push("/result");
-      }, 1000);
+
+      if (mode === "bg") {
+        // ---- Mode baru: Ganti Background ----
+        sessionStorage.setItem("captureMode", "bg");
+        sessionStorage.setItem("selectedBackground", backgroundId || "studio-gray");
+        setTimeout(() => {
+          router.push("/result-bg");
+        }, 1000);
+      } else {
+        // ---- Mode lama: Full AI + Frame ----
+        sessionStorage.setItem("captureMode", "ai");
+        sessionStorage.setItem("selectedStyle", style || "minimalist-elegant");
+        sessionStorage.setItem("selectedTemplate", templateId || "single-1");
+        setTimeout(() => {
+          router.push("/result");
+        }, 1000);
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [photos, slots, isSessionActive]);
