@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Layout, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { TEMPLATES, PhotoFrame, getTemplate } from "../lib/templates";
+import { TEMPLATES, FramePreview, getTemplate } from "../lib/templates";
 
 function TemplateContent() {
   const router = useRouter();
@@ -43,11 +43,14 @@ function TemplateContent() {
 
         {/* ===== PREVIEW BESAR & JELAS (hasil = cetakan) ===== */}
         <div className="mb-5 flex flex-col items-center">
-          <div className="aspect-[2/3] w-[150px] overflow-hidden rounded-md border border-gray-200 bg-white shadow-2xl">
+          <div className="overflow-hidden rounded-md border border-gray-200 bg-white shadow-2xl">
             {selected ? (
-              <PhotoFrame template={selected.id} />
+              <FramePreview template={selected.id} width={150} />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gray-50 px-3 text-center text-xs font-bold text-gray-400">
+              <div
+                style={{ width: 150, height: 225 }}
+                className="flex items-center justify-center bg-gray-50 px-3 text-center text-xs font-bold text-gray-400"
+              >
                 Pilih template di bawah untuk melihat preview
               </div>
             )}
@@ -69,8 +72,8 @@ function TemplateContent() {
                   : "border-gray-100 bg-white"
               }`}
             >
-              <div className="aspect-[2/3] h-20 flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
-                <PhotoFrame template={tpl.id} compact />
+              <div className="flex-shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                <FramePreview template={tpl.id} compact width={54} />
               </div>
               <div className="flex-1">
                 <h3 className="text-[15px] font-bold leading-tight text-gray-800">{tpl.name}</h3>

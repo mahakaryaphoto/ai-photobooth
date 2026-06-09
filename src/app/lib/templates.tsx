@@ -312,3 +312,44 @@ export function PhotoFrame({ template, photos = [], compact = false }: FrameProp
     </div>
   );
 }
+
+/**
+ * Ukuran "asli" desain frame (rasio 2:3 = kertas 4R).
+ * Semua padding/border/teks di PhotoFrame dirancang untuk ukuran ini.
+ */
+export const FRAME_BASE_WIDTH = 300;
+export const FRAME_BASE_HEIGHT = 450;
+
+/**
+ * Versi frame yang AMAN untuk preview/thumbnail berapa pun ukurannya.
+ * Frame tetap dirender pada ukuran aslinya (300x450) lalu DIPERKECIL
+ * dengan transform: scale(), sehingga proporsi padding & slot SELALU benar
+ * (tidak gepeng/berantakan seperti saat memaksa frame ke kotak kecil).
+ *
+ * Pakai ini di daftar template & kotak preview. Untuk hasil cetak ukuran
+ * penuh (4R) cukup pakai <PhotoFrame> langsung.
+ */
+export function FramePreview({
+  template,
+  photos = [],
+  compact = false,
+  width = FRAME_BASE_WIDTH,
+}: FrameProps & { width?: number }) {
+  const scale = width / FRAME_BASE_WIDTH;
+  const height = width * (FRAME_BASE_HEIGHT / FRAME_BASE_WIDTH);
+
+  return (
+    <div className="relative overflow-hidden bg-white" style={{ width, height }}>
+      <div
+        style={{
+          width: FRAME_BASE_WIDTH,
+          height: FRAME_BASE_HEIGHT,
+          transform: `scale(${scale})`,
+          transformOrigin: "top left",
+        }}
+      >
+        <PhotoFrame template={template} photos={photos} compact={compact} />
+      </div>
+    </div>
+  );
+}
